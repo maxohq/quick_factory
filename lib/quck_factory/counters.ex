@@ -1,17 +1,17 @@
-defmodule QuickFactory.SchemaCounter do
+defmodule QuickFactory.Counters do
   @moduledoc """
   This is a counter module that wraps :counters
 
-  ### Setting Up
-  We can use this in our application by calling `QuickFactory.SchemaCounter.start()`
+  ### Setup
+  We can use this in our application by calling `QuickFactory.Counters.start()`
   inside our `test/test_helper.exs` file.
 
-  ### Using SchemaCounter
+  ### Using Counters
   We can then use this module to add unique integers to each field, each value
-  will only be used once provided we continue to call `QuickFactory.SchemaCounter.next`
+  will only be used once provided we continue to call `QuickFactory.Counters.next`
 
   ```elixir
-  QuickFactory.SchemaCounter.next("my_schema_field")
+  QuickFactory.Counters.next("my_schema_field")
   ```
   """
 
@@ -22,11 +22,19 @@ defmodule QuickFactory.SchemaCounter do
   @term_key :quick_factory_counter_ref
 
   @doc """
-  This starts the SchemaCounter, you need to call this before calling any of the other
+  This starts the Counters, you need to call this before calling any of the other
   functions in this module. Most commonly this will go in your `test/test_helper.exs` file
   """
   @spec start :: :ok
   def start do
+    if :persistent_term.get(@term_key, nil) do
+      IO.puts("QuickFactory.Counters already started")
+    else
+      :persistent_term.put(@term_key, :counters.new(@phash_range, []))
+    end
+  end
+
+  def reset do
     :persistent_term.put(@term_key, :counters.new(@phash_range, []))
   end
 
@@ -36,9 +44,9 @@ defmodule QuickFactory.SchemaCounter do
   ### Example
 
       iex> key = Enum.random(1..10_000_000)
-      iex> QuickFactory.SchemaCounter.increment(key)
+      iex> QuickFactory.Counters.increment(key)
       :ok
-      iex> QuickFactory.SchemaCounter.get(key)
+      iex> QuickFactory.Counters.get(key)
       1
   """
   @spec increment(key :: any) :: :ok
@@ -46,17 +54,20 @@ defmodule QuickFactory.SchemaCounter do
     :counters.add(counter_ref(), key_hash(key), 1)
   end
 
+  ## Alias for `increment`
+  def inc(key), do: increment(key)
+
   @doc """
   Puts the counter for a specific key
 
   ### Example
 
       iex> key = Enum.random(1..10_000_000)
-      iex> QuickFactory.SchemaCounter.increment(key)
+      iex> QuickFactory.Counters.increment(key)
       :ok
-      iex> QuickFactory.SchemaCounter.put(key, 1234)
+      iex> QuickFactory.Counters.put(key, 1234)
       :ok
-      iex> QuickFactory.SchemaCounter.get(key)
+      iex> QuickFactory.Counters.get(key)
       1234
   """
   @spec put(key :: any, value :: integer) :: :ok
@@ -70,9 +81,9 @@ defmodule QuickFactory.SchemaCounter do
   ### Example
 
       iex> key = Enum.random(1..10_000_000)
-      iex> QuickFactory.SchemaCounter.increment(key)
+      iex> QuickFactory.Counters.increment(key)
       :ok
-      iex> QuickFactory.SchemaCounter.get(key)
+      iex> QuickFactory.Counters.get(key)
       1
   """
   @spec get(key :: any) :: integer
@@ -86,11 +97,11 @@ defmodule QuickFactory.SchemaCounter do
   ### Example
 
       iex> key = Enum.random(1..10_000_000)
-      iex> QuickFactory.SchemaCounter.next(key)
+      iex> QuickFactory.Counters.next(key)
       0
-      iex> QuickFactory.SchemaCounter.next(key)
+      iex> QuickFactory.Counters.next(key)
       1
-      iex> QuickFactory.SchemaCounter.next(key)
+      iex> QuickFactory.Counters.next(key)
       2
   """
   @spec next(key :: any) :: integer

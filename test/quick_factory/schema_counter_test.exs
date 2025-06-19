@@ -1,11 +1,11 @@
-defmodule QuickFactory.SchemaCounterTest do
+defmodule QuickFactory.CountersTest do
   use ExUnit.Case
 
   setup_all do
-    :ok = QuickFactory.SchemaCounter.start()
+    :ok = QuickFactory.Counters.start()
 
     %{}
   end
 
-  doctest QuickFactory.SchemaCounter
+  doctest QuickFactory.Counters
 end

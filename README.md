@@ -97,3 +97,9 @@ end
 ## Documentation
 
 For full documentation, visit [HexDocs](https://hexdocs.pm/quick_factory).
+
+
+## Credits
+
+Most of the code was taken from
+- https://github.com/theblitzapp/factory_ex with simplifications and removals.

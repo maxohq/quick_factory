@@ -101,5 +101,6 @@ For full documentation, visit [HexDocs](https://hexdocs.pm/quick_factory).
 
 ## Credits
 
-Most of the code was taken from
+Ideas / Code taken from:
 - https://github.com/theblitzapp/factory_ex with simplifications and removals.
+- https://github.com/beam-community/ex_machina/blob/main/lib/ex_machina/sequence.ex - nice sequence handling

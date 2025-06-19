@@ -15,7 +15,8 @@ defmodule QuickFactoryBareTest do
 
     def build(params \\ %{}) do
       default = %{
-        bare: "33"
+        bare: "33",
+        funky: sequence("funky")
       }
 
       Map.merge(default, params)
@@ -26,10 +27,12 @@ defmodule QuickFactoryBareTest do
 
   test "can generate a factory" do
     ## without changeset validation
-    assert %Bare{bare: 1000} = QuickFactory.build(TestFactory, [bare: 1000], validate: false)
+    assert %Bare{bare: 1000, funky: "funky0"} =
+             QuickFactory.build(TestFactory, [bare: 1000], validate: false)
 
     ## with changeset validation - keyword list
-    assert %Bare{bare: "45"} = QuickFactory.build(TestFactory, [bare: "45"], validate: true)
+    assert %Bare{bare: "45", funky: "funky1"} =
+             QuickFactory.build(TestFactory, [bare: "45"], validate: true)
 
     ## with changeset validation - map
     assert %Bare{bare: "10"} = QuickFactory.build(TestFactory, %{bare: "10"})

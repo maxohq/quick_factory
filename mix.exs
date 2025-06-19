@@ -44,7 +44,6 @@ defmodule QuickFactory.MixProject do
   defp deps do
     [
       {:ecto, "~> 3.0"},
-      {:faker, ">= 0.0.0"},
       {:ecto_sql, "~> 3.0", only: [:test, :dev], optional: true},
       {:postgrex, "~> 0.16", only: [:test, :dev], optional: true},
       {:ex_doc, "~> 0.29", only: :dev, runtime: false}

@@ -248,6 +248,11 @@ defmodule QuickFactory do
   @spec sequence(any, (integer -> any) | nonempty_list, start_at: non_neg_integer) :: any
   def sequence(name, formatter, opts), do: QuickFactory.Sequence.next(name, formatter, opts)
 
+  @doc """
+  Reset sequence / sequences
+  """
+  def sequence_reset(name_or_names), do: QuickFactory.Sequence.reset(name_or_names)
+
   ### private
 
   defp maybe_encode_keys(params, []), do: params

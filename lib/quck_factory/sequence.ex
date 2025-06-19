@@ -2,7 +2,7 @@ defmodule QuickFactory.Sequence do
   @moduledoc """
   Module for generating sequential values.
 
-  Use `QuickFactory.Sequence/1` or `QuickFactory.Sequence/2` to generate
+  Use `QuickFactory.sequence/1` or `QuickFactory.sequence/2` to generate
   sequential values instead of calling this module directly.
   """
 

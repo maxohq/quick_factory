@@ -1,3 +1,7 @@
+### 0.2.1 - 2025-06-19
+
+- (fix): fix flaky tests for QuickFactory.Counters
+
 ### 0.2.0 - 2025-06-19
 
 - (breaking): changed the main function from `build` to `call`, so it wont clash with the delegation to `build` on QuickFactory module

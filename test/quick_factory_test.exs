@@ -30,11 +30,10 @@ defmodule QuickFactoryTest do
   end
 
   defmodule TestFactory do
-    @behaviour QuickFactory
-
-    def schema, do: MySchema
-
-    def repo, do: MyRepo
+    use QuickFactory,
+      schema: MySchema,
+      repo: MyRepo,
+      changeset: :changeset
 
     def build(params \\ %{}) do
       default = %{

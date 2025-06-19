@@ -16,6 +16,11 @@ defmodule QuickFactory do
   @callback repo() :: module()
 
   @doc """
+  Callback that returns which changeset function to use.
+  """
+  @callback changeset() :: atom()
+
+  @doc """
   Callback that returns a map with valid defaults for the schema.
   """
   @callback build(map()) :: map()
@@ -26,6 +31,21 @@ defmodule QuickFactory do
   @callback build_struct(map()) :: struct()
 
   @optional_callbacks [build_struct: 1]
+
+  defmacro __using__(opts) do
+    schema = Keyword.fetch!(opts, :schema)
+    repo = Keyword.fetch!(opts, :repo)
+    changeset = Keyword.get(opts, :changeset, :changeset)
+
+    quote do
+      @behaviour QuickFactory
+      alias QuickFactory.Counters
+
+      def schema, do: unquote(schema)
+      def repo, do: unquote(repo)
+      def changeset, do: unquote(changeset)
+    end
+  end
 
   @doc """
   Builds many parameters for a schema `changeset/2` function given the factory
@@ -165,18 +185,11 @@ defmodule QuickFactory do
     if validate? && schema?(module) do
       params = Utils.deep_struct_to_map(params)
 
-      if create_changeset_defined?(module.schema()) do
-        module.schema().create_changeset(params)
-      else
-        module.schema().changeset(struct(module.schema(), %{}), params)
-      end
+      model = struct(module.schema(), %{})
+      Kernel.apply(module.schema(), module.changeset(), [model, params])
     else
-      struct!(module.schema, params)
+      struct!(module.schema(), params)
     end
-  end
-
-  defp create_changeset_defined?(module) do
-    function_exported?(module, :create_changeset, 1)
   end
 
   defp schema?(module) do

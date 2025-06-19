@@ -47,31 +47,31 @@ defmodule QuickFactory do
       def changeset, do: unquote(changeset)
 
       def build_many_params(count, params \\ %{}, opts \\ []) do
-        QuickFactory.build_many_params(count, unquote(schema), params, opts)
+        QuickFactory.build_many_params(count, __MODULE__, params, opts)
       end
 
       def build_params(params \\ %{}, opts \\ []) do
-        QuickFactory.build_params(unquote(schema), params, opts)
+        QuickFactory.build_params(__MODULE__, params, opts)
       end
 
       def build_invalid_params do
-        QuickFactory.build_invalid_params(unquote(schema))
+        QuickFactory.build_invalid_params(__MODULE__)
       end
 
       def build(params \\ %{}, opts \\ []) do
-        QuickFactory.build(unquote(schema), params, opts)
+        QuickFactory.build(__MODULE__, params, opts)
       end
 
       def insert!(params \\ %{}, opts \\ []) do
-        QuickFactory.insert!(unquote(schema), params, opts)
+        QuickFactory.insert!(__MODULE__, params, opts)
       end
 
       def insert_many!(count, params \\ %{}, opts \\ []) do
-        QuickFactory.insert_many!(count, unquote(schema), params, opts)
+        QuickFactory.insert_many!(count, __MODULE__, params, opts)
       end
 
       def cleanup!(opts \\ []) do
-        QuickFactory.cleanup!(unquote(schema), opts)
+        QuickFactory.cleanup!(__MODULE__, opts)
       end
     end
   end

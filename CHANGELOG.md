@@ -1,3 +1,7 @@
+### 0.2.2 - 2025-06-19
+
+- (fix): proper delegation to QuickFactory functions
+
 ### 0.2.1 - 2025-06-19
 
 - (fix): fix flaky tests for QuickFactory.Counters

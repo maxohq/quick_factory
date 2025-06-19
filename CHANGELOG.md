@@ -1,3 +1,7 @@
+### 0.2.3 - 2025-06-19
+
+- (feat): export sequence_reset function on QuickFactory
+
 ### 0.2.2 - 2025-06-19
 
 - (fix): proper delegation to QuickFactory functions

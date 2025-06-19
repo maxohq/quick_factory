@@ -26,7 +26,9 @@ defmodule MyApp.UserFactory do
     %{
       name: "John Doe",
       email: "john@example.com",
-      age: 25
+      age: 25,
+      first_name: "John",
+      last_name: "Doe"
     }
     |> Map.merge(params)
   end
@@ -60,13 +62,17 @@ users = QuickFactory.insert_many!(3, UserFactory)
 Perfect for API testing with different key formats:
 
 ```elixir
+# Default: atom keys
+QuickFactory.build_params(UserFactory)
+#=> %{name: "John Doe", first_name: "John", last_name: "Doe"}
+
 # String keys
 QuickFactory.build_params(UserFactory, %{}, keys: :string)
-#=> %{"name" => "John Doe", "email" => "john@example.com"}
+#=> %{"name" => "John Doe", "first_name" => "John", "last_name" => "Doe"}
 
-# CamelCase keys
+# CamelCase string keys (great for JSON APIs)
 QuickFactory.build_params(UserFactory, %{}, keys: :camel_string)
-#=> %{"name" => "John Doe", "email" => "john@example.com"}
+#=> %{"name" => "John Doe", "firstName" => "John", "lastName" => "Doe"}
 ```
 
 ## Installation

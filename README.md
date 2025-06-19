@@ -1,21 +1,93 @@
 # QuickFactory
 
-**TODO: Add description**
+A lightweight, flexible factory library for Elixir that makes test data generation simple and intuitive.
+
+## Features
+
+- 🚀 **Simple Setup** - Define factories with minimal boilerplate
+- 🔧 **Flexible Data Generation** - Build structs, params, or insert directly to database
+- ✅ **Changeset Validation** - Optional validation using your schema's changesets
+- 🔄 **Batch Operations** - Generate multiple records at once
+- 🎯 **Key Transformation** - Support for atom, string, and camelCase keys
+- 📊 **Built-in Counters** - Generate unique values across test runs
+
+## Quick Start
+
+### 1. Define a Factory
+
+```elixir
+defmodule MyApp.UserFactory do
+  use QuickFactory,
+    schema: MyApp.User,
+    repo: MyApp.Repo,
+    changeset: :changeset
+
+  def build(params \\ %{}) do
+    %{
+      name: "John Doe",
+      email: "john@example.com",
+      age: 25
+    }
+    |> Map.merge(params)
+  end
+end
+```
+
+### 2. Generate Test Data
+
+```elixir
+# Build a struct
+user = QuickFactory.build(UserFactory)
+#=> %User{name: "John Doe", email: "john@example.com", age: 25}
+
+# Build with custom params
+user = QuickFactory.build(UserFactory, %{name: "Jane"})
+#=> %User{name: "Jane", email: "john@example.com", age: 25}
+
+# Generate params only (great for API testing)
+params = QuickFactory.build_params(UserFactory, %{age: 30})
+#=> %{name: "John Doe", email: "john@example.com", age: 30}
+
+# Insert to database
+user = QuickFactory.insert!(UserFactory)
+
+# Generate multiple records
+users = QuickFactory.insert_many!(3, UserFactory)
+```
+
+### 3. Key Transformations
+
+Perfect for API testing with different key formats:
+
+```elixir
+# String keys
+QuickFactory.build_params(UserFactory, %{}, keys: :string)
+#=> %{"name" => "John Doe", "email" => "john@example.com"}
+
+# CamelCase keys
+QuickFactory.build_params(UserFactory, %{}, keys: :camel_string)
+#=> %{"name" => "John Doe", "email" => "john@example.com"}
+```
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `quick_factory` to your list of dependencies in `mix.exs`:
+Add `quick_factory` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:quick_factory, "~> 0.1.0"}
+    {:quick_factory, "~> 0.1.0", only: :test}
   ]
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/quick_factory>.
+## Why QuickFactory?
 
+- **Less Magic, More Control** - Explicit factory definitions that are easy to understand
+- **Test-Focused** - Built specifically for testing scenarios
+- **Ecto Integration** - Works seamlessly with Ecto schemas and changesets
+- **Lightweight** - Minimal dependencies and overhead
+
+## Documentation
+
+For full documentation, visit [HexDocs](https://hexdocs.pm/quick_factory).

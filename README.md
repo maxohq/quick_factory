@@ -82,7 +82,7 @@ Add `quick_factory` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:quick_factory, "~> 0.1.0", only: :test}
+    {:quick_factory, "~> 0.2.0", only: :test}
   ]
 end
 ```

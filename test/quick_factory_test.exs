@@ -17,10 +17,11 @@ defmodule QuickFactoryTest do
       field(:foo, :integer)
       field(:bar, :integer)
       field(:foo_bar_baz, :integer)
+      field(:mycounter, :integer, default: 0)
     end
 
     @required_params [:foo, :bar]
-    @available_params [:foo_bar_baz | @required_params]
+    @available_params [:foo_bar_baz, :mycounter | @required_params]
 
     def changeset(%__MODULE__{} = user, attrs \\ %{}) do
       user
@@ -39,7 +40,8 @@ defmodule QuickFactoryTest do
       default = %{
         foo: 21,
         bar: 42,
-        foo_bar_baz: 11
+        foo_bar_baz: 11,
+        mycounter: Counters.next(__MODULE__)
       }
 
       Map.merge(default, params)
@@ -47,17 +49,18 @@ defmodule QuickFactoryTest do
   end
 
   test "can generate a factory" do
-    # assert %MySchema{foo: 21, bar: 42} = QuickFactory.insert!(TestFactory)
-    # assert %MySchema{foo: 21, bar: 10} = QuickFactory.insert!(TestFactory, bar: 10)
+    QuickFactory.Counters.reset()
 
-    assert %MySchema{foo: 21, bar: 42, foo_bar_baz: 11} = QuickFactory.build(TestFactory)
+    assert %MySchema{foo: 21, bar: 42, foo_bar_baz: 11, mycounter: 0} =
+             QuickFactory.build(TestFactory)
 
-    assert %MySchema{foo: 21, bar: 10, foo_bar_baz: 11} =
+    assert %MySchema{foo: 21, bar: 10, foo_bar_baz: 11, mycounter: 1} =
              QuickFactory.build(TestFactory, %{bar: 10})
 
-    assert %{foo: 21, bar: 42, foo_bar_baz: 11} = QuickFactory.build_params(TestFactory)
+    assert %{foo: 21, bar: 42, foo_bar_baz: 11, mycounter: 2} =
+             QuickFactory.build_params(TestFactory)
 
-    assert %{foo: 21, bar: 10, foo_bar_baz: 11} =
+    assert %{foo: 21, bar: 10, foo_bar_baz: 11, mycounter: 3} =
              QuickFactory.build_params(TestFactory, %{bar: 10})
   end
 

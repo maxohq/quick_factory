@@ -201,31 +201,17 @@ defmodule QuickFactory do
 
   @doc """
   Shortcut for creating unique string values.
-
-  This is automatically imported into a model factory when you `use QuickFactory`.
+  Automatically imported into a model factory when you `use QuickFactory`.
 
   This is equivalent to `sequence(name, &"\#{name}\#{&1}")`. If you need to
   customize the returned string, see `sequence/2`.
 
-  Note that sequences keep growing and are *not* reset by ExMachina. Most of the
-  time you won't need to reset the sequence, but when you do need to reset them,
-  you can use `ExMachina.Sequence.reset/0`.
-
   ## Examples
+      # Will generate "username0" then "username1", etc.
+      username: sequence("username")
 
-      def build(params) do
-        %{
-          # Will generate "username0" then "username1", etc.
-          username: sequence("username")
-        }
-      end
-
-      def build(params) do
-        %{
-          # Will generate "Article Title0" then "Article Title1", etc.
-          title: sequence("Article Title")
-        }
-      end
+      # Will generate "Article Title0" then "Article Title1", etc.
+      title: sequence("Article Title")
   """
   @spec sequence(String.t()) :: String.t()
 
@@ -234,25 +220,18 @@ defmodule QuickFactory do
   @doc """
   Create sequences for generating unique values.
 
-  This is automatically imported into a model factory when you `use QuickFactory`.
-
   The `name` can be any term, although it is typically an atom describing the
   sequence. Each time a sequence is called with the same `name`, its number is
   incremented by one.
 
-  The `formatter` function takes the sequence number, and returns a sequential
-  representation of that number – typically a formatted string.
-
   ## Examples
 
-      def build(params) do
-        %{
-          # Will generate "me-0@foo.com" then "me-1@foo.com", etc.
-          email: sequence(:email, &"me-\#{&1}@foo.com"),
-          # Will generate "admin" then "user", "other", "admin" etc.
-          role: sequence(:role, ["admin", "user", "other"])
-        }
-      end
+      # Will generate "me-0@foo.com" then "me-1@foo.com", etc.
+      sequence(:email, &"me-\#{&1}@foo.com"),
+      # Will generate "admin" then "user", "other", "admin" etc.
+      sequence(:role, ["admin", "user", "other"])
+
+
   """
   @spec sequence(any, (integer -> any) | nonempty_list) :: any
   def sequence(name, formatter), do: QuickFactory.Sequence.next(name, formatter)
@@ -263,12 +242,8 @@ defmodule QuickFactory do
 
   ## Examples
 
-      def build(params) do
-        %{
-          # Will generate "me-100@foo.com" then "me-101@foo.com", etc.
-          email: sequence(:email, &"me-\#{&1}@foo.com", start_at: 100),
-        }
-      end
+      # Will generate "me-100@foo.com" then "me-101@foo.com", etc.
+      email: sequence(:email, &"me-\#{&1}@foo.com", start_at: 100),
   """
   @spec sequence(any, (integer -> any) | nonempty_list, start_at: non_neg_integer) :: any
   def sequence(name, formatter, opts), do: QuickFactory.Sequence.next(name, formatter, opts)

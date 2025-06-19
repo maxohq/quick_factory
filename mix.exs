@@ -1,7 +1,7 @@
 defmodule QuickFactory.MixProject do
   use Mix.Project
   @github_url "https://github.com/maxohq/quick_factory"
-  @version "0.1.1"
+  @version "0.2.0"
 
   def project do
     [

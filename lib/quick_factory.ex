@@ -40,6 +40,7 @@ defmodule QuickFactory do
     quote do
       @behaviour QuickFactory
       alias QuickFactory.Counters
+      import QuickFactory, only: [sequence: 1, sequence: 2, sequence: 3]
 
       def schema, do: unquote(schema)
       def repo, do: unquote(repo)
@@ -180,6 +181,82 @@ defmodule QuickFactory do
   def cleanup(module, options \\ []) do
     module.repo().delete_all(module.schema(), options)
   end
+
+  @doc """
+  Shortcut for creating unique string values.
+
+  This is automatically imported into a model factory when you `use QuickFactory`.
+
+  This is equivalent to `sequence(name, &"\#{name}\#{&1}")`. If you need to
+  customize the returned string, see `sequence/2`.
+
+  Note that sequences keep growing and are *not* reset by ExMachina. Most of the
+  time you won't need to reset the sequence, but when you do need to reset them,
+  you can use `ExMachina.Sequence.reset/0`.
+
+  ## Examples
+
+      def build(params) do
+        %{
+          # Will generate "username0" then "username1", etc.
+          username: sequence("username")
+        }
+      end
+
+      def build(params) do
+        %{
+          # Will generate "Article Title0" then "Article Title1", etc.
+          title: sequence("Article Title")
+        }
+      end
+  """
+  @spec sequence(String.t()) :: String.t()
+
+  def sequence(name), do: QuickFactory.Sequence.next(name)
+
+  @doc """
+  Create sequences for generating unique values.
+
+  This is automatically imported into a model factory when you `use QuickFactory`.
+
+  The `name` can be any term, although it is typically an atom describing the
+  sequence. Each time a sequence is called with the same `name`, its number is
+  incremented by one.
+
+  The `formatter` function takes the sequence number, and returns a sequential
+  representation of that number – typically a formatted string.
+
+  ## Examples
+
+      def build(params) do
+        %{
+          # Will generate "me-0@foo.com" then "me-1@foo.com", etc.
+          email: sequence(:email, &"me-\#{&1}@foo.com"),
+          # Will generate "admin" then "user", "other", "admin" etc.
+          role: sequence(:role, ["admin", "user", "other"])
+        }
+      end
+  """
+  @spec sequence(any, (integer -> any) | nonempty_list) :: any
+  def sequence(name, formatter), do: QuickFactory.Sequence.next(name, formatter)
+
+  @doc """
+  Similar to `sequence/2` but it allows for passing a `start_at` option
+  to the sequence generation.
+
+  ## Examples
+
+      def build(params) do
+        %{
+          # Will generate "me-100@foo.com" then "me-101@foo.com", etc.
+          email: sequence(:email, &"me-\#{&1}@foo.com", start_at: 100),
+        }
+      end
+  """
+  @spec sequence(any, (integer -> any) | nonempty_list, start_at: non_neg_integer) :: any
+  def sequence(name, formatter, opts), do: QuickFactory.Sequence.next(name, formatter, opts)
+
+  ### private
 
   defp maybe_changeset(params, module, validate?) do
     if validate? && schema?(module) do

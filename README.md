@@ -22,7 +22,7 @@ defmodule MyApp.UserFactory do
     repo: MyApp.Repo,
     changeset: :changeset
 
-  def build(params \\ %{}) do
+  def call(params \\ %{}) do
     %{
       name: "John Doe",
       email: "john@example.com",
@@ -39,22 +39,22 @@ end
 
 ```elixir
 # Build a struct
-user = QuickFactory.build(UserFactory)
+user = UserFactory.build()
 #=> %User{name: "John Doe", email: "john@example.com", age: 25}
 
 # Build with custom params
-user = QuickFactory.build(UserFactory, %{name: "Jane"})
+user = UserFactory.build(%{name: "Jane"})
 #=> %User{name: "Jane", email: "john@example.com", age: 25}
 
 # Generate params only (great for API testing)
-params = QuickFactory.build_params(UserFactory, %{age: 30})
+params = UserFactory.build_params(%{age: 30})
 #=> %{name: "John Doe", email: "john@example.com", age: 30}
 
 # Insert to database
-user = QuickFactory.insert!(UserFactory)
+user = UserFactory.insert!()
 
 # Generate multiple records
-users = QuickFactory.insert_many!(3, UserFactory)
+users = UserFactory.insert_many!(3)
 ```
 
 ### 3. Key Transformations
@@ -63,15 +63,15 @@ Perfect for API testing with different key formats:
 
 ```elixir
 # Default: atom keys
-QuickFactory.build_params(UserFactory)
+UserFactory.build_params()
 #=> %{name: "John Doe", first_name: "John", last_name: "Doe"}
 
 # String keys
-QuickFactory.build_params(UserFactory, %{}, keys: :string)
+UserFactory.build_params(%{}, keys: :string)
 #=> %{"name" => "John Doe", "first_name" => "John", "last_name" => "Doe"}
 
 # CamelCase string keys (great for JSON APIs)
-QuickFactory.build_params(UserFactory, %{}, keys: :camel_string)
+UserFactory.build_params(%{}, keys: :camel_string)
 #=> %{"name" => "John Doe", "firstName" => "John", "lastName" => "Doe"}
 ```
 

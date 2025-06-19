@@ -36,15 +36,14 @@ defmodule QuickFactoryTest do
       repo: MyRepo,
       changeset: :changeset
 
-    def build(params \\ %{}) do
-      default = %{
+    def call(params \\ %{}) do
+      %{
         foo: 21,
         bar: 42,
         foo_bar_baz: 11,
         mycounter: Counters.next(__MODULE__)
       }
-
-      Map.merge(default, params)
+      |> Map.merge(params)
     end
   end
 

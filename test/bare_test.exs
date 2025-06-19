@@ -13,13 +13,12 @@ defmodule QuickFactoryBareTest do
       repo: MyRepo,
       changeset: :changeset_update
 
-    def build(params \\ %{}) do
-      default = %{
+    def call(params \\ %{}) do
+      %{
         bare: "33",
         funky: sequence("funky")
       }
-
-      Map.merge(default, params)
+      |> Map.merge(params)
     end
   end
 

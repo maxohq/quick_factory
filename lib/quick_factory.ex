@@ -6,6 +6,11 @@ defmodule QuickFactory do
         ]
 
   @doc """
+  Callback that returns a map with valid defaults for the schema. <=== THE MAIN CALLBACK
+  """
+  @callback call(map()) :: map()
+
+  @doc """
   Callback that returns the schema module.
   """
   @callback schema() :: module()
@@ -19,11 +24,6 @@ defmodule QuickFactory do
   Callback that returns which changeset function to use.
   """
   @callback changeset() :: atom()
-
-  @doc """
-  Callback that returns a map with valid defaults for the schema.
-  """
-  @callback build(map()) :: map()
 
   @doc """
   Callback that returns a struct with valid defaults for the schema.
@@ -45,6 +45,34 @@ defmodule QuickFactory do
       def schema, do: unquote(schema)
       def repo, do: unquote(repo)
       def changeset, do: unquote(changeset)
+
+      def build_many_params(count, params \\ %{}, opts \\ []) do
+        QuickFactory.build_many_params(count, unquote(schema), params, opts)
+      end
+
+      def build_params(params \\ %{}, opts \\ []) do
+        QuickFactory.build_params(unquote(schema), params, opts)
+      end
+
+      def build_invalid_params do
+        QuickFactory.build_invalid_params(unquote(schema))
+      end
+
+      def build(params \\ %{}, opts \\ []) do
+        QuickFactory.build(unquote(schema), params, opts)
+      end
+
+      def insert!(params \\ %{}, opts \\ []) do
+        QuickFactory.insert!(unquote(schema), params, opts)
+      end
+
+      def insert_many!(count, params \\ %{}, opts \\ []) do
+        QuickFactory.insert_many!(count, unquote(schema), params, opts)
+      end
+
+      def cleanup!(opts \\ []) do
+        QuickFactory.cleanup!(unquote(schema), opts)
+      end
     end
   end
 
@@ -76,20 +104,9 @@ defmodule QuickFactory do
     Code.ensure_loaded(module.schema())
 
     params
-    |> module.build()
+    |> module.call()
     |> Utils.deep_struct_to_map()
     |> maybe_encode_keys(opts)
-  end
-
-  defp maybe_encode_keys(params, []), do: params
-
-  defp maybe_encode_keys(params, opts) do
-    case opts[:keys] do
-      nil -> params
-      :atom -> params
-      :string -> Utils.stringify_keys(params)
-      :camel_string -> Utils.camelize_keys(params)
-    end
   end
 
   @spec build_invalid_params(module()) :: map()
@@ -133,7 +150,7 @@ defmodule QuickFactory do
     validate = Keyword.get(options, :validate, true)
 
     params
-    |> module.build()
+    |> module.call()
     |> maybe_changeset(module, validate)
     |> case do
       %Ecto.Changeset{} = changeset -> Ecto.Changeset.apply_action!(changeset, :insert)
@@ -158,7 +175,7 @@ defmodule QuickFactory do
     validate? = Keyword.get(options, :validate, true)
 
     params
-    |> module.build()
+    |> module.call()
     |> maybe_changeset(module, validate?)
     |> module.repo().insert!(options)
   end
@@ -177,8 +194,8 @@ defmodule QuickFactory do
   Removes all the instances of a schema from the database given its factory
   `module`.
   """
-  @spec cleanup(module) :: {integer(), nil | [term()]}
-  def cleanup(module, options \\ []) do
+  @spec cleanup!(module) :: {integer(), nil | [term()]}
+  def cleanup!(module, options \\ []) do
     module.repo().delete_all(module.schema(), options)
   end
 
@@ -257,6 +274,17 @@ defmodule QuickFactory do
   def sequence(name, formatter, opts), do: QuickFactory.Sequence.next(name, formatter, opts)
 
   ### private
+
+  defp maybe_encode_keys(params, []), do: params
+
+  defp maybe_encode_keys(params, opts) do
+    case opts[:keys] do
+      nil -> params
+      :atom -> params
+      :string -> Utils.stringify_keys(params)
+      :camel_string -> Utils.camelize_keys(params)
+    end
+  end
 
   defp maybe_changeset(params, module, validate?) do
     if validate? && schema?(module) do
